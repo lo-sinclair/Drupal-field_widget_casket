@@ -1,0 +1,4 @@
+name = Field Widget Casket
+description = "Provides new widgets for fields."
+core = 7.x
+package = Fields

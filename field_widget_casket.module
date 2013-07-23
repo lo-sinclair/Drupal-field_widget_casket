@@ -1,0 +1,72 @@
+<?php
+/**
+ * @file
+ * Provides new widgets for fields.
+ *
+ * Provides widgets:
+ *
+ * - Display non: Поле становится видимым только 
+ *   для роли administrator
+ */
+
+/**
+ * Implements hook_field_widget_info().
+ */
+//dsm(array_keys(field_info_field_types()));
+function field_widget_casket_field_widget_info() {
+
+  //'field types' => array_keys(field_info_field_types())
+
+  $widgets['field_extrawidgets_display_non'] = array(
+    'label' => t('Display non'),
+    'description' => t('Визуально скрывает поле от всех, кроме суперюзера'),
+    'field types' => array('list_text'),
+    'settings' => array(),
+    'behaviors' => array(
+      'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+    ),
+    'weight' => 10,
+  );
+
+  return $widgets;
+}
+
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function field_widget_casket_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $widget_type = $instance['widget']['type'];
+  //$widget_settings = field_extrawidgets_widget_settings($field, $instance);
+
+  switch ($widget_type) {
+     case 'field_extrawidgets_display_non':
+        $instance['widget']['type'] = 'options_select';
+
+        $widget_form = options_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
+        global $user;
+        if(array_search('administrator', $user->roles) !== false) {
+          $prefix = '';
+          $suffix = '';
+          $widget_form['#prefix']= '<div style="color: #ff0000">';
+          $widget_form['#suffix'] = '</div>';
+          $widget_form['#title'].= ' (Поле для админа)';
+        }
+        else {
+          $widget_form['#prefix'] = '<div style="display: none">';
+          $widget_form['#suffix'] = '</div>';
+        }
+
+        $element['display_none'] = $widget_form;
+
+        break;
+     
+       default:
+         $element = array();
+         break;
+   } 
+
+  
+  
+   return $element;
+}
