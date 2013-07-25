@@ -5,7 +5,7 @@
  *
  * Provides widgets:
  *
- * - Display non: Поле становится видимым только 
+ * - Display none: Поле становится видимым только 
  *   для роли administrator
  */
 
@@ -14,16 +14,14 @@
  */
 //dsm(array_keys(field_info_field_types()));
 function field_widget_casket_field_widget_info() {
-
-  //'field types' => array_keys(field_info_field_types())
-
-  $widgets['field_extrawidgets_display_non'] = array(
-    'label' => t('Display non'),
+  $widgets['field_widget_casket_display_none'] = array(
+    'label' => t('Display none'),
     'description' => t('Визуально скрывает поле от всех, кроме суперюзера'),
-    'field types' => array('list_text'),
+    'field types' => array('list_text', 'text'),
     'settings' => array(),
     'behaviors' => array(
       'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+      'default value' => FIELD_BEHAVIOR_DEFAULT,
     ),
     'weight' => 10,
   );
@@ -32,18 +30,24 @@ function field_widget_casket_field_widget_info() {
 }
 
 
+
 /**
  * Implements hook_field_widget_form().
  */
 function field_widget_casket_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $widget_type = $instance['widget']['type'];
-  //$widget_settings = field_extrawidgets_widget_settings($field, $instance);
+  $main_widget = array();
 
   switch ($widget_type) {
-     case 'field_extrawidgets_display_non':
-        $instance['widget']['type'] = 'options_select';
+     case 'field_widget_casket_display_none':
+        $default_value = isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL;
+        $options = list_allowed_values($field);
+        $widget_form = $element + array(
+          '#type' => 'select',
+          '#default_value' => $default_value,
+          '#options' => $options,
+        );
 
-        $widget_form = options_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
         global $user;
         if(array_search('administrator', $user->roles) !== false) {
           $prefix = '';
@@ -56,17 +60,15 @@ function field_widget_casket_field_widget_form(&$form, &$form_state, $field, $in
           $widget_form['#prefix'] = '<div style="display: none">';
           $widget_form['#suffix'] = '</div>';
         }
-
-        $element['display_none'] = $widget_form;
-
         break;
      
        default:
-         $element = array();
+         $widget_form = array();
          break;
    } 
 
-  
-  
+   $element[]['value'] = $widget_form;
+   
+
    return $element;
 }
