@@ -37,6 +37,7 @@ function field_widget_casket_field_widget_info() {
 function field_widget_casket_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $widget_type = $instance['widget']['type'];
   $main_widget = array();
+<<<<<<< HEAD
 
   switch ($widget_type) {
      case 'field_widget_casket_display_none':
@@ -46,6 +47,17 @@ function field_widget_casket_field_widget_form(&$form, &$form_state, $field, $in
           '#type' => 'select',
           '#default_value' => $default_value,
           '#options' => $options,
+=======
+
+
+  switch ($widget_type) {
+     case 'field_widget_casket_display_none':
+        $options = list_allowed_values($field);
+        $widget_form = $element + array(
+          '#type' => 'select',
+          '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
+          '#options' => $options
+>>>>>>> 87de52cbeb04ad99ecf86c2a02b6c5d0cf004d83
         );
 
         global $user;
@@ -67,8 +79,12 @@ function field_widget_casket_field_widget_form(&$form, &$form_state, $field, $in
          break;
    } 
 
+<<<<<<< HEAD
    $element[]['value'] = $widget_form;
    
+=======
+   $element['value'] = $widget_form;
+>>>>>>> 87de52cbeb04ad99ecf86c2a02b6c5d0cf004d83
 
    return $element;
 }
